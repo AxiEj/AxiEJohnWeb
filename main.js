@@ -28,7 +28,7 @@ function resetTransform() {
 }
 
 // wheel zoom — zoom toward cursor
-container.addEventListener('wheel', e => {
+window.addEventListener('wheel', e => {
   e.preventDefault();
   const rect = container.getBoundingClientRect();
   const cx = e.clientX - rect.left - rect.width / 2;
@@ -72,7 +72,7 @@ function touchMid(a, b) {
   return { x: (a.clientX + b.clientX) / 2, y: (a.clientY + b.clientY) / 2 };
 }
 
-container.addEventListener('touchstart', e => {
+window.addEventListener('touchstart', e => {
   e.preventDefault();
   [...e.changedTouches].forEach(t => { touches[t.identifier] = t; });
   const ids = Object.keys(touches);
@@ -89,7 +89,7 @@ container.addEventListener('touchstart', e => {
   }
 }, { passive: false });
 
-container.addEventListener('touchmove', e => {
+window.addEventListener('touchmove', e => {
   e.preventDefault();
   [...e.changedTouches].forEach(t => { touches[t.identifier] = t; });
   const ids = Object.keys(touches);
@@ -118,7 +118,7 @@ container.addEventListener('touchmove', e => {
   }
 }, { passive: false });
 
-container.addEventListener('touchend', e => {
+window.addEventListener('touchend', e => {
   [...e.changedTouches].forEach(t => { delete touches[t.identifier]; });
   lastDist = null;
   const ids = Object.keys(touches);

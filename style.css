@@ -61,7 +61,7 @@ nav:hover{opacity:1}
   position:fixed;
   inset:0;
   background:var(--bg);
-  overflow:hidden;
+  overflow:visible;
   cursor:grab;
   display:flex;
   align-items:center;
