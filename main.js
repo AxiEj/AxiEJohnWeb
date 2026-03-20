@@ -156,11 +156,42 @@ container.addEventListener('dblclick', resetTransform);
 // NAV
 // ============================================================
 const nav = document.getElementById('nav');
+const arrPrev = document.getElementById('arr-prev');
+const arrNext = document.getElementById('arr-next');
+const counter = document.getElementById('counter');
 
 // 每个分类缓存已加载的图片列表
 const imageCache = new Array(CATEGORIES.length).fill(null);
+let currentCat = 0;
+let currentImg = 0;
+
+const isMobile = () => window.innerWidth <= 768;
+
+function updateCounter(imgs) {
+  if (imgs.length <= 1) {
+    counter.textContent = '';
+    counter.classList.remove('visible');
+    arrPrev.classList.remove('visible');
+    arrNext.classList.remove('visible');
+  } else {
+    counter.textContent = `${currentImg + 1} / ${imgs.length}`;
+    counter.classList.add('visible');
+    arrPrev.classList.add('visible');
+    arrNext.classList.add('visible');
+  }
+}
+
+function showImage(imgs, index) {
+  currentImg = (index + imgs.length) % imgs.length;
+  img.onload = resetTransform;
+  img.src = imgs[currentImg];
+  resetTransform();
+  updateCounter(imgs);
+}
 
 async function activate(index) {
+  currentCat = index;
+  currentImg = 0;
   document.querySelectorAll('.nav-item').forEach((el, i) => {
     el.classList.toggle('active', i === index);
   });
@@ -172,13 +203,37 @@ async function activate(index) {
   const imgs = imageCache[index];
   if (imgs.length === 0) {
     img.src = '';
+    counter.textContent = '';
+    counter.classList.remove('visible');
+    arrPrev.classList.remove('visible');
+    arrNext.classList.remove('visible');
     return;
   }
 
-  img.onload = resetTransform;
-  img.src = imgs[0];
-  resetTransform();
+  showImage(imgs, 0);
 }
+
+arrPrev.addEventListener('click', () => {
+  const imgs = imageCache[currentCat];
+  if (imgs && imgs.length > 1) showImage(imgs, currentImg - 1);
+});
+
+arrNext.addEventListener('click', () => {
+  const imgs = imageCache[currentCat];
+  if (imgs && imgs.length > 1) showImage(imgs, currentImg + 1);
+});
+
+// 键盘左右键切换
+window.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft') {
+    const imgs = imageCache[currentCat];
+    if (imgs && imgs.length > 1) showImage(imgs, currentImg - 1);
+  } else if (e.key === 'ArrowRight') {
+    const imgs = imageCache[currentCat];
+    if (imgs && imgs.length > 1) showImage(imgs, currentImg + 1);
+  }
+});
+
 
 CATEGORIES.forEach(({ label }, i) => {
   const btn = document.createElement('button');

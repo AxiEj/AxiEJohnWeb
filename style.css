@@ -81,3 +81,49 @@ nav:hover{opacity:1}
   user-select:none;
   pointer-events:none;
 }
+
+/* 左右翻页箭头 */
+.arrow{
+  position:fixed;
+  top:0;
+  bottom:0;
+  width:60px;
+  z-index:10;
+  background:none;
+  border:none;
+  color:var(--text);
+  font-size:24px;
+  cursor:pointer;
+  opacity:0;
+  transition:opacity .3s ease;
+  user-select:none;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.arrow.left{ left:0; }
+.arrow.right{ right:0; }
+.arrow.visible{ opacity:.25; }
+.arrow.visible:hover{ opacity:1; }
+
+@media(max-width:768px){
+  .arrow{ width:48px; font-size:20px; }
+  .arrow.visible:active{ opacity:1; }
+}
+
+/* 图片计数 */
+#counter{
+  position:fixed;
+  bottom:16px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:10;
+  font-family:var(--mono);
+  font-size:11px;
+  letter-spacing:2px;
+  color:var(--muted);
+  opacity:0;
+  transition:opacity .3s ease;
+  pointer-events:none;
+}
+#counter.visible{ opacity:1; }
