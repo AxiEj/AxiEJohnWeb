@@ -22,9 +22,10 @@ function renderHero() {
 
 function renderGallery() {
   const frag = document.createDocumentFragment();
-  FRAMES.forEach(({ src, layout }) => {
+  FRAMES.forEach(({ src, layout }, i) => {
     const article = document.createElement('article');
     article.className = `frame frame-${layout}`;
+    article.dataset.index = `// ${String(i + 2).padStart(2, '0')}`;
     const div = document.createElement('div');
     div.className = 'frame-img';
     // 懒加载：图片进入视口才设置背景

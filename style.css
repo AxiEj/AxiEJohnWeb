@@ -1,39 +1,24 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
 :root{
-  --black:#0a0a0a;
-  --white:#fafafa;
-  --gray:#888;
-  --light:#f0ede8;
-  --serif:"Georgia","Times New Roman",serif;
-  --sans:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
-  --gap:3px;
+  --bg:#0d1117;
+  --surface:#161b22;
+  --border:#30363d;
+  --text:#e6edf3;
+  --muted:#8b949e;
+  --accent:#58a6ff;
+  --mono:"Space Mono","Courier New",monospace;
+  --gap:1px;
   --ease:cubic-bezier(.25,.46,.45,.94);
 }
 
 html{scroll-behavior:smooth}
 
 body{
-  background:var(--white);
-  color:var(--black);
-  font-family:var(--sans);
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--mono);
   overflow-x:hidden;
-}
-
-/* NAV */
-nav{
-  position:fixed;
-  inset:0 0 auto 0;
-  z-index:100;
-  padding:20px 40px;
-  mix-blend-mode:multiply;
-}
-.logo{
-  font-family:var(--serif);
-  font-size:22px;
-  font-weight:400;
-  letter-spacing:6px;
-  color:var(--black);
 }
 
 /* HERO */
@@ -43,26 +28,46 @@ nav{
   height:100vh;
   overflow:hidden;
   contain:layout paint;
+  border-bottom:1px solid var(--border);
 }
 .hero-img{
   width:100%;
   height:100%;
-  background:var(--light) center/cover no-repeat;
+  background:var(--surface) center/cover no-repeat;
   transform:scale(1.03);
   will-change:transform;
+  filter:brightness(.85) contrast(1.05);
 }
+
+/* 左上角坐标水印 */
+.hero::before{
+  content:"[01 / HERO]";
+  position:absolute;
+  top:20px;
+  left:24px;
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:2px;
+  color:var(--accent);
+  opacity:.7;
+  z-index:2;
+  pointer-events:none;
+}
+
 .scroll-hint{
   position:absolute;
-  bottom:36px;
-  right:60px;
-  font-size:20px;
-  color:var(--gray);
+  bottom:24px;
+  right:24px;
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:2px;
+  color:var(--muted);
   animation:bounce 2s infinite;
   pointer-events:none;
 }
 @keyframes bounce{
   0%,100%{transform:translateY(0)}
-  50%{transform:translateY(8px)}
+  50%{transform:translateY(6px)}
 }
 
 /* GALLERY */
@@ -70,7 +75,7 @@ nav{
   display:grid;
   grid-template-columns:repeat(12,1fr);
   gap:var(--gap);
-  background:#ddd;
+  background:var(--border);
   margin-top:var(--gap);
   contain:layout;
 }
@@ -78,7 +83,7 @@ nav{
 .frame{
   position:relative;
   overflow:hidden;
-  background:var(--light);
+  background:var(--surface);
   cursor:pointer;
   opacity:0;
   transition:opacity .6s ease;
@@ -91,9 +96,29 @@ nav{
   height:100%;
   background:center/cover no-repeat;
   transition:transform .7s var(--ease);
+  filter:brightness(.9) contrast(1.05);
   will-change:transform;
 }
-.frame:hover .frame-img{transform:scale(1.04)}
+.frame:hover .frame-img{
+  transform:scale(1.04);
+  filter:brightness(1) contrast(1.05);
+}
+
+/* hover 时左下角显示编号 */
+.frame::after{
+  content:attr(data-index);
+  position:absolute;
+  bottom:12px;
+  left:14px;
+  font-family:var(--mono);
+  font-size:9px;
+  letter-spacing:2px;
+  color:var(--accent);
+  opacity:0;
+  transition:opacity .3s ease;
+  pointer-events:none;
+}
+.frame:hover::after{opacity:1}
 
 /* layouts */
 .frame-full    {grid-column:span 12;aspect-ratio:21/9}
@@ -103,21 +128,21 @@ nav{
 
 /* FOOTER */
 footer{
-  padding:40px;
+  padding:32px 24px;
   text-align:center;
-  font-family:"Space Mono",monospace;
-  font-size:11px;
-  letter-spacing:2px;
-  color:var(--gray);
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:3px;
+  color:var(--muted);
   text-transform:uppercase;
-  background:var(--white);
+  background:var(--bg);
+  border-top:1px solid var(--border);
   margin-top:var(--gap);
 }
 
 /* MOBILE */
 @media(max-width:768px){
-  nav{padding:20px 24px}
-  .scroll-hint{right:24px}
+  .scroll-hint{right:16px}
   .frame-half,
   .frame-wide,
   .frame-portrait{grid-column:span 12;aspect-ratio:4/3}
