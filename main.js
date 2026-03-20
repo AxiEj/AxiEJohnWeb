@@ -68,7 +68,7 @@ function bindLazyLoad() {
       entry.target.classList.add('visible');
       obs.unobserve(entry.target);
     });
-  }, { threshold: 0.08, rootMargin: '100px' });
+  }, { threshold: 0, rootMargin: '600px' });
 
   document.querySelectorAll('.frame').forEach(f => imgObserver.observe(f));
 }
