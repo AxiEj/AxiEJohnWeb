@@ -2,7 +2,7 @@
 // DATA — 在这里修改分类名称和对应图片
 // ============================================================
 const CATEGORIES = [
-  { label: 'jojo7',    src: 'images/01.png' },
+  { label: 'jojo7',    src: 'images/01.jpg' },
   { label: '老七老八',  src: 'images/02.jpg' },
   { label: '几何炸弹王', src: 'images/03.png' },
 ];
