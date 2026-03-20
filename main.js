@@ -23,7 +23,11 @@ function applyTransform() {
 }
 
 function resetTransform() {
-  scale = 1; ox = 0; oy = 0;
+  ox = 0; oy = 0;
+  // fit the image inside the viewport (contain behaviour)
+  const fitW = container.clientWidth / img.naturalWidth;
+  const fitH = container.clientHeight / img.naturalHeight;
+  scale = (img.naturalWidth && img.naturalHeight) ? Math.min(fitW, fitH, 1) : 1;
   applyTransform();
 }
 
@@ -138,6 +142,7 @@ container.addEventListener('dblclick', resetTransform);
 const nav = document.getElementById('nav');
 
 function activate(index) {
+  img.onload = resetTransform;
   img.src = CATEGORIES[index].src;
   resetTransform();
   document.querySelectorAll('.nav-item').forEach((el, i) => {
