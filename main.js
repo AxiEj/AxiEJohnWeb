@@ -28,7 +28,7 @@ function resetTransform() {
 }
 
 // wheel zoom — zoom toward cursor
-window.addEventListener('wheel', e => {
+container.addEventListener('wheel', e => {
   e.preventDefault();
   const rect = container.getBoundingClientRect();
   const cx = e.clientX - rect.left - rect.width / 2;
@@ -61,7 +61,7 @@ function stopDrag() {
 }
 window.addEventListener('mouseup', stopDrag);
 
-// touch pinch & pan
+// touch pinch & pan — 只绑定在 container，不影响导航栏
 let touches = {};
 let lastDist = null, lastMid = null, baseTouchOx, baseTouchOy;
 
@@ -72,7 +72,7 @@ function touchMid(a, b) {
   return { x: (a.clientX + b.clientX) / 2, y: (a.clientY + b.clientY) / 2 };
 }
 
-window.addEventListener('touchstart', e => {
+container.addEventListener('touchstart', e => {
   e.preventDefault();
   [...e.changedTouches].forEach(t => { touches[t.identifier] = t; });
   const ids = Object.keys(touches);
@@ -89,7 +89,7 @@ window.addEventListener('touchstart', e => {
   }
 }, { passive: false });
 
-window.addEventListener('touchmove', e => {
+container.addEventListener('touchmove', e => {
   e.preventDefault();
   [...e.changedTouches].forEach(t => { touches[t.identifier] = t; });
   const ids = Object.keys(touches);
@@ -118,7 +118,7 @@ window.addEventListener('touchmove', e => {
   }
 }, { passive: false });
 
-window.addEventListener('touchend', e => {
+container.addEventListener('touchend', e => {
   [...e.changedTouches].forEach(t => { delete touches[t.identifier]; });
   lastDist = null;
   const ids = Object.keys(touches);
@@ -129,7 +129,7 @@ window.addEventListener('touchend', e => {
   }
 }, { passive: false });
 
-// double-click / double-tap to reset
+// double-tap to reset
 container.addEventListener('dblclick', resetTransform);
 
 // ============================================================
