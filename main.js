@@ -191,6 +191,8 @@ function showImage(imgs, index) {
 }
 
 async function activate(index) {
+  const panel = document.getElementById('about-panel');
+  if (panel.classList.contains('open')) toggleAbout();
   currentCat = index;
   currentImg = 0;
   document.querySelectorAll('.nav-item').forEach((el, i) => {
@@ -224,7 +226,7 @@ arrNext.addEventListener('click', () => {
   if (imgs && imgs.length > 1) showImage(imgs, currentImg + 1);
 });
 
-// 键盘左右键切换
+// 键盘左右键切换，Escape 关闭关于面板
 window.addEventListener('keydown', e => {
   if (e.key === 'ArrowLeft') {
     const imgs = imageCache[currentCat];
@@ -232,9 +234,22 @@ window.addEventListener('keydown', e => {
   } else if (e.key === 'ArrowRight') {
     const imgs = imageCache[currentCat];
     if (imgs && imgs.length > 1) showImage(imgs, currentImg + 1);
+  } else if (e.key === 'Escape') {
+    const panel = document.getElementById('about-panel');
+    if (panel.classList.contains('open')) toggleAbout();
   }
 });
 
+
+function toggleAbout() {
+  const panel = document.getElementById('about-panel');
+  const isOpen = panel.classList.toggle('open');
+  document.querySelector('.nav-about')?.classList.toggle('active', isOpen);
+  arrPrev.classList.toggle('hidden', isOpen);
+  arrNext.classList.toggle('hidden', isOpen);
+  counter.classList.toggle('hidden', isOpen);
+}
+document.getElementById('about-close').addEventListener('click', toggleAbout);
 
 CATEGORIES.forEach(({ label }, i) => {
   const btn = document.createElement('button');
@@ -243,6 +258,12 @@ CATEGORIES.forEach(({ label }, i) => {
   btn.addEventListener('click', () => activate(i));
   nav.appendChild(btn);
 });
+
+const btnAbout = document.createElement('button');
+btnAbout.className = 'nav-item nav-about';
+btnAbout.textContent = '关于我';
+btnAbout.addEventListener('click', toggleAbout);
+nav.appendChild(btnAbout);
 
 activate(0);
 
