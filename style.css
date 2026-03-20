@@ -33,10 +33,9 @@ nav{
   background:var(--bg);
   border:none;
   cursor:pointer;
-  font-family:var(--mono);
-  font-size:10px;
-  letter-spacing:2px;
-  text-transform:uppercase;
+  font-family:"Noto Serif SC","Space Mono",monospace;
+  font-size:13px;
+  letter-spacing:3px;
   color:var(--muted);
   transition:color .2s, background .2s;
 }
