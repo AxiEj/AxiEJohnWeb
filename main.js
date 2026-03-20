@@ -7,6 +7,7 @@ const CATEGORIES = [
   { label: '几何炸弹王', dir: 'images/geometrydashbombing/' },
   { label: 'KON',      dir: 'images/kon/' },
   { label: 'CLANNAD',  dir: 'images/clannad/' },
+  { label: 'LOYALTY',  dir: 'images/loyalty/' },
 ];
 
 const IMAGE_EXTS = /\.(jpe?g|png|gif|webp|avif|bmp|svg)$/i;
