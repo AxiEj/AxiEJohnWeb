@@ -85,7 +85,7 @@ nav:hover{opacity:1}
 /* 左右翻页箭头 */
 .arrow{
   position:fixed;
-  top:0;
+  top:48px;
   bottom:0;
   width:60px;
   z-index:10;
@@ -206,6 +206,11 @@ nav:hover{opacity:1}
   transition:color .2s, border-color .2s;
 }
 .about-links a:hover{ color:var(--text); border-color:var(--text); }
+.about-link-text{
+  font-size:14px;
+  letter-spacing:2px;
+  color:var(--muted);
+}
 
 .about-section{
   margin-bottom:40px;
