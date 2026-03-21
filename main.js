@@ -280,8 +280,10 @@ mapleFrame.addEventListener('load', () => {
       const href = a.getAttribute('href');
       if (!href || href.startsWith('#') || href.startsWith('http') || a.target === '_blank') return;
       e.preventDefault();
+      const next = new URL(href, mapleFrame.contentWindow.location.href).href;
+      if (next === mapleFrame.contentWindow.location.href) return; // 当前页无反应
       mapleFrame.classList.add('fading');
-      mapleFrame.src = new URL(href, mapleFrame.contentWindow.location.href).href;
+      mapleFrame.src = next;
     });
   } catch(e) {}
 });
