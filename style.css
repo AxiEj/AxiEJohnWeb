@@ -1,20 +1,16 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
 /* View Transitions — gallery category switch */
-::view-transition-old(gallery){
-  animation:vt-out .15s ease forwards;
-}
+::view-transition-old(gallery),
 ::view-transition-new(gallery){
-  animation:vt-in .2s ease forwards;
+  animation-duration:.18s;
+  animation-timing-function:ease;
 }
-@keyframes vt-out{
-  from{opacity:1}
-  to  {opacity:0}
-}
-@keyframes vt-in{
-  from{opacity:0}
-  to  {opacity:1}
-}
+::view-transition-old(gallery){ animation-name:vt-out }
+::view-transition-new(gallery){ animation-name:vt-in }
+::view-transition-image-pair(gallery){ isolation:isolate }
+@keyframes vt-out{ to{opacity:0} }
+@keyframes vt-in { from{opacity:0} }
 
 :root{
   --bg:#fafafa;
@@ -99,7 +95,6 @@ nav:hover{opacity:1}
   align-items:center;
   justify-content:center;
   touch-action:none;
-  view-transition-name:gallery;
 }
 
 body.kuromi-bg .full{
@@ -115,6 +110,8 @@ body.kuromi-bg .full{
   transform-origin:center center;
   user-select:none;
   pointer-events:none;
+  view-transition-name:gallery;
+  contain:layout;
 }
 
 /* 左右翻页箭头 */
