@@ -8,6 +8,7 @@ const CATEGORIES = [
   { label: 'KON',      dir: 'images/kon/' },
   { label: 'CLANNAD',  dir: 'images/clannad/' },
   { label: '性情',  dir: 'images/loyalty/' },
+  { label: '猫·2015', dir: 'images/cat2015/' },
 ];
 
 const IMAGE_EXTS = /\.(jpe?g|png|gif|webp|avif|bmp|svg)$/i;
