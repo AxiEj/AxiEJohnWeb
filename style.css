@@ -157,6 +157,7 @@ body.kuromi-bg .full{
   border:none;
   display:none;
   z-index:12;
+  background:#fff;
 }
 #maple-frame.open{
   display:block;
