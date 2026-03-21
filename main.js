@@ -285,7 +285,7 @@ function toggleMaple() {
   } else {
     const panel = document.getElementById('about-panel');
     if (panel.classList.contains('open')) toggleAbout();
-    if (!mapleFrame.src) mapleFrame.src = 'maple/index.html';
+    if (!mapleFrame.src || !mapleFrame.src.includes('maple/')) mapleFrame.src = 'maple/index.html';
     mapleFrame.classList.add('open');
     document.body.classList.add('maple-open');
     fullEl.style.visibility = 'hidden';
