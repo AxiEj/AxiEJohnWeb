@@ -204,6 +204,9 @@ async function activate(index) {
     imageCache[index] = await fetchImages(CATEGORIES[index].dir);
   }
 
+  const KUROMI_CATS = ['KON', 'CLANNAD', '猫·2015'];
+  document.body.classList.toggle('kuromi-bg', KUROMI_CATS.includes(CATEGORIES[index].label));
+
   const imgs = imageCache[index];
   if (imgs.length === 0) {
     img.src = '';
