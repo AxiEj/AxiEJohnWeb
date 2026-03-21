@@ -165,9 +165,7 @@ const mapleFrame = document.getElementById('maple-frame');
 const mapleCover = document.getElementById('maple-cover');
 
 mapleFrame.addEventListener('load', () => {
-  // 等页面渲染完再淡出遮罩
   setTimeout(() => { mapleCover.classList.remove('visible'); }, 50);
-  // 拦截新页面内所有链接点击，点击时先淡入遮罩再跳转
   try {
     mapleFrame.contentDocument.addEventListener('click', e => {
       const a = e.target.closest('a[href]');
@@ -175,8 +173,10 @@ mapleFrame.addEventListener('load', () => {
       const href = a.getAttribute('href');
       if (!href || href.startsWith('#') || href.startsWith('http') || a.target === '_blank') return;
       e.preventDefault();
+      // 把相对路径转成绝对路径（相对于当前 iframe 页面）
+      const abs = new URL(href, mapleFrame.contentWindow.location.href).href;
       mapleCover.classList.add('visible');
-      setTimeout(() => { mapleFrame.contentWindow.location.href = href; }, 120);
+      setTimeout(() => { mapleFrame.src = abs; }, 120);
     });
   } catch(e) {}
 });
@@ -210,34 +210,45 @@ function showImage(imgs, index) {
   updateCounter(imgs);
 }
 
+// 通用过渡：遮罩淡入后执行 fn，再淡出
+function withCover(fn) {
+  mapleCover.classList.add('visible');
+  setTimeout(() => {
+    fn();
+    setTimeout(() => { mapleCover.classList.remove('visible'); }, 50);
+  }, 120);
+}
+
 async function activate(index) {
   const panel = document.getElementById('about-panel');
   if (panel.classList.contains('open')) toggleAbout();
   if (mapleFrame.classList.contains('open')) closeMaple();
-  currentCat = index;
-  currentImg = 0;
-  document.querySelectorAll('.nav-item').forEach((el, i) => {
-    el.classList.toggle('active', i === index);
+
+  withCover(async () => {
+    currentCat = index;
+    currentImg = 0;
+    document.querySelectorAll('.nav-item').forEach((el, i) => {
+      el.classList.toggle('active', i === index);
+    });
+
+    if (!imageCache[index]) {
+      imageCache[index] = await fetchImages(CATEGORIES[index].dir);
+    }
+
+    const KUROMI_CATS = ['KON', 'CLANNAD', '猫·2015'];
+    document.body.classList.toggle('kuromi-bg', KUROMI_CATS.includes(CATEGORIES[index].label));
+
+    const imgs = imageCache[index];
+    if (imgs.length === 0) {
+      img.src = '';
+      counter.textContent = '';
+      counter.classList.remove('visible');
+      arrPrev.classList.remove('visible');
+      arrNext.classList.remove('visible');
+      return;
+    }
+    showImage(imgs, 0);
   });
-
-  if (!imageCache[index]) {
-    imageCache[index] = await fetchImages(CATEGORIES[index].dir);
-  }
-
-  const KUROMI_CATS = ['KON', 'CLANNAD', '猫·2015'];
-  document.body.classList.toggle('kuromi-bg', KUROMI_CATS.includes(CATEGORIES[index].label));
-
-  const imgs = imageCache[index];
-  if (imgs.length === 0) {
-    img.src = '';
-    counter.textContent = '';
-    counter.classList.remove('visible');
-    arrPrev.classList.remove('visible');
-    arrNext.classList.remove('visible');
-    return;
-  }
-
-  showImage(imgs, 0);
 }
 
 arrPrev.addEventListener('click', () => {
@@ -286,30 +297,36 @@ CATEGORIES.forEach(({ label }, i) => {
 function openMaple() {
   const panel = document.getElementById('about-panel');
   if (panel.classList.contains('open')) toggleAbout();
-  if (mapleFrame.src !== location.origin + '/maple/index.html' &&
-      !mapleFrame.src.endsWith('maple/index.html')) {
-    mapleFrame.src = 'maple/index.html';
-  }
-  mapleFrame.classList.add('open');
-  document.body.classList.add('maple-open');
-  document.getElementById('full').style.visibility = 'hidden';
-  btnMaple.classList.add('active');
-  arrPrev.classList.add('hidden');
-  arrNext.classList.add('hidden');
-  counter.classList.add('hidden');
+  mapleCover.classList.add('visible');
+  setTimeout(() => {
+    if (!mapleFrame.src.endsWith('maple/index.html')) {
+      mapleFrame.src = 'maple/index.html';
+    } else {
+      setTimeout(() => { mapleCover.classList.remove('visible'); }, 50);
+    }
+    mapleFrame.classList.add('open');
+    document.body.classList.add('maple-open');
+    document.getElementById('full').style.visibility = 'hidden';
+    btnMaple.classList.add('active');
+    arrPrev.classList.add('hidden');
+    arrNext.classList.add('hidden');
+    counter.classList.add('hidden');
+  }, 120);
 }
 
 function closeMaple() {
-  mapleFrame.classList.remove('open');
-  document.body.classList.remove('maple-open');
-  document.getElementById('full').style.visibility = '';
-  btnMaple.classList.remove('active');
-  const imgs = imageCache[currentCat];
-  if (imgs && imgs.length > 1) {
-    arrPrev.classList.remove('hidden');
-    arrNext.classList.remove('hidden');
-    counter.classList.remove('hidden');
-  }
+  withCover(() => {
+    mapleFrame.classList.remove('open');
+    document.body.classList.remove('maple-open');
+    document.getElementById('full').style.visibility = '';
+    btnMaple.classList.remove('active');
+    const imgs = imageCache[currentCat];
+    if (imgs && imgs.length > 1) {
+      arrPrev.classList.remove('hidden');
+      arrNext.classList.remove('hidden');
+      counter.classList.remove('hidden');
+    }
+  });
 }
 
 const btnMaple = document.createElement('button');

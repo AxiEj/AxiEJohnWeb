@@ -168,7 +168,7 @@ body.kuromi-bg .full{
   top:45px;
   background:#fff;
   z-index:13;
-  display:none;
+  display:block;
   opacity:0;
   pointer-events:none;
   transition:opacity .1s;
