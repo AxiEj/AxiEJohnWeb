@@ -327,4 +327,4 @@ function toggleAbout() {
 activate(0);
 
 nav.style.opacity = '1';
-setTimeout(() => { nav.style.opacity = ''; }, 2000);
+setTimeout(() => { nav.style.opacity = ''; }, 5000);
