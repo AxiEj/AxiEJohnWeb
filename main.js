@@ -161,24 +161,6 @@ const nav = document.getElementById('nav');
 const arrPrev = document.getElementById('arr-prev');
 const arrNext = document.getElementById('arr-next');
 const counter = document.getElementById('counter');
-const mapleFrame = document.getElementById('maple-frame');
-const fullEl = document.getElementById('full');
-
-mapleFrame.addEventListener('load', () => {
-  requestAnimationFrame(() => { mapleFrame.classList.add('visible'); });
-  try {
-    mapleFrame.contentDocument.addEventListener('click', e => {
-      const a = e.target.closest('a[href]');
-      if (!a) return;
-      const href = a.getAttribute('href');
-      if (!href || href.startsWith('#') || href.startsWith('http') || a.target === '_blank') return;
-      e.preventDefault();
-      const abs = new URL(href, mapleFrame.contentWindow.location.href).href;
-      mapleFrame.classList.remove('visible');
-      mapleFrame.src = abs;
-    });
-  } catch(e) {}
-});
 
 // 每个分类缓存已加载的图片列表
 const imageCache = new Array(CATEGORIES.length).fill(null);
@@ -212,7 +194,7 @@ function showImage(imgs, index) {
 async function activate(index) {
   const panel = document.getElementById('about-panel');
   if (panel.classList.contains('open')) toggleAbout();
-  if (mapleFrame.classList.contains('open')) closeMaple();
+  if (mapleFrame?.classList.contains('open')) toggleMaple();
   currentCat = index;
   currentImg = 0;
   document.querySelectorAll('.nav-item').forEach((el, i) => {
@@ -235,6 +217,7 @@ async function activate(index) {
     arrNext.classList.remove('visible');
     return;
   }
+
   showImage(imgs, 0);
 }
 
@@ -281,47 +264,50 @@ CATEGORIES.forEach(({ label }, i) => {
   nav.appendChild(btn);
 });
 
-function openMaple() {
-  const panel = document.getElementById('about-panel');
-  if (panel.classList.contains('open')) toggleAbout();
-  if (!mapleFrame.src.endsWith('maple/index.html')) {
-    mapleFrame.src = 'maple/index.html';
-  } else {
-    requestAnimationFrame(() => { mapleFrame.classList.add('visible'); });
-  }
-  mapleFrame.classList.add('open');
-  fullEl.style.visibility = 'hidden';
-  document.body.classList.add('maple-open');
-  btnMaple.classList.add('active');
-  arrPrev.classList.add('hidden');
-  arrNext.classList.add('hidden');
-  counter.classList.add('hidden');
-}
+const btnMaple = document.createElement('button');
+btnMaple.className = 'nav-item nav-maple';
+btnMaple.textContent = 'MAPLE';
+btnMaple.addEventListener('click', toggleMaple);
+nav.appendChild(btnMaple);
 
-function closeMaple() {
-  mapleFrame.classList.remove('visible');
-  mapleFrame.addEventListener('transitionend', () => {
+const mapleFrame = document.getElementById('maple-frame');
+const fullEl = document.getElementById('full');
+
+function toggleMaple() {
+  if (mapleFrame.classList.contains('open')) {
     mapleFrame.classList.remove('open');
     document.body.classList.remove('maple-open');
     fullEl.style.visibility = '';
     btnMaple.classList.remove('active');
-    const imgs = imageCache[currentCat];
-    if (imgs && imgs.length > 1) {
-      arrPrev.classList.remove('hidden');
-      arrNext.classList.remove('hidden');
-      counter.classList.remove('hidden');
-    }
-  }, { once: true });
+    arrPrev.classList.remove('hidden');
+    arrNext.classList.remove('hidden');
+    counter.classList.remove('hidden');
+  } else {
+    const panel = document.getElementById('about-panel');
+    if (panel.classList.contains('open')) toggleAbout();
+    if (!mapleFrame.src) mapleFrame.src = 'maple/index.html';
+    mapleFrame.classList.add('open');
+    document.body.classList.add('maple-open');
+    fullEl.style.visibility = 'hidden';
+    btnMaple.classList.add('active');
+    arrPrev.classList.add('hidden');
+    arrNext.classList.add('hidden');
+    counter.classList.add('hidden');
+  }
 }
 
-const btnMaple = document.createElement('button');
-btnMaple.className = 'nav-item nav-maple';
-btnMaple.textContent = 'MAPLE';
-btnMaple.addEventListener('click', () => {
-  if (mapleFrame.classList.contains('open')) closeMaple();
-  else openMaple();
+mapleFrame.addEventListener('load', () => {
+  try {
+    mapleFrame.contentDocument.addEventListener('click', e => {
+      const a = e.target.closest('a[href]');
+      if (!a) return;
+      const href = a.getAttribute('href');
+      if (!href || href.startsWith('#') || href.startsWith('http') || a.target === '_blank') return;
+      e.preventDefault();
+      mapleFrame.src = new URL(href, mapleFrame.contentWindow.location.href).href;
+    });
+  } catch(e) {}
 });
-nav.appendChild(btnMaple);
 
 const btnAbout = document.createElement('button');
 btnAbout.className = 'nav-item nav-about';

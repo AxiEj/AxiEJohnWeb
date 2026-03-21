@@ -159,12 +159,10 @@ body.kuromi-bg .full{
   z-index:12;
   background:#fff;
   opacity:0;
-  transition:opacity .25s;
+  transition:opacity .35s;
 }
 #maple-frame.open{
   display:block;
-}
-#maple-frame.visible{
   opacity:1;
 }
 
