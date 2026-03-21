@@ -197,9 +197,18 @@ function showImage(imgs, index) {
 
 function activate(index) {
   if (aboutPanel.classList.contains('open')) toggleAbout();
-  if (mapleFrame.classList.contains('open')) toggleMaple();
 
   const run = () => {
+    // 关闭 maple（不触发过渡，统一由本次 startViewTransition 处理）
+    if (mapleFrame.classList.contains('open')) {
+      mapleFrame.classList.remove('open');
+      document.body.classList.remove('maple-open');
+      btnMaple.classList.remove('active');
+      arrPrev.classList.remove('hidden');
+      arrNext.classList.remove('hidden');
+      counter.classList.remove('hidden');
+    }
+
     currentCat = index;
     currentImg = 0;
     navBtns.forEach((btn, i) => btn.classList.toggle('active', i === index));
@@ -253,23 +262,27 @@ btnMaple.addEventListener('click', toggleMaple);
 nav.appendChild(btnMaple);
 
 function toggleMaple() {
-  if (mapleFrame.classList.contains('open')) {
-    mapleFrame.classList.remove('open');
-    document.body.classList.remove('maple-open');
-    btnMaple.classList.remove('active');
-    arrPrev.classList.remove('hidden');
-    arrNext.classList.remove('hidden');
-    counter.classList.remove('hidden');
-  } else {
-    if (aboutPanel.classList.contains('open')) toggleAbout();
-    if (!mapleFrame.src.includes('maple/')) mapleFrame.src = 'maple/index.html';
-    mapleFrame.classList.add('open');
-    document.body.classList.add('maple-open');
-    btnMaple.classList.add('active');
-    arrPrev.classList.add('hidden');
-    arrNext.classList.add('hidden');
-    counter.classList.add('hidden');
-  }
+  const run = () => {
+    if (mapleFrame.classList.contains('open')) {
+      mapleFrame.classList.remove('open');
+      document.body.classList.remove('maple-open');
+      btnMaple.classList.remove('active');
+      arrPrev.classList.remove('hidden');
+      arrNext.classList.remove('hidden');
+      counter.classList.remove('hidden');
+    } else {
+      if (aboutPanel.classList.contains('open')) toggleAbout();
+      if (!mapleFrame.src.includes('maple/')) mapleFrame.src = 'maple/index.html';
+      mapleFrame.classList.add('open');
+      document.body.classList.add('maple-open');
+      btnMaple.classList.add('active');
+      arrPrev.classList.add('hidden');
+      arrNext.classList.add('hidden');
+      counter.classList.add('hidden');
+    }
+  };
+  if (document.startViewTransition) document.startViewTransition(run);
+  else run();
 }
 
 mapleFrame.addEventListener('load', () => {

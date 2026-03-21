@@ -1,6 +1,8 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
-/* View Transitions — gallery category switch */
+/* View Transitions — gallery category switch
+   view-transition-name 放在 .full（fixed inset:0）而非 img 上，
+   避免浏览器对不同尺寸图片做 geometry morphing，只做纯 fade */
 ::view-transition-old(gallery),
 ::view-transition-new(gallery){
   animation-duration:.18s;
@@ -95,6 +97,7 @@ nav:hover{opacity:1}
   align-items:center;
   justify-content:center;
   touch-action:none;
+  view-transition-name:gallery; /* 放在固定全屏容器上，尺寸恒定，纯 fade */
 }
 
 body.kuromi-bg .full{
@@ -110,8 +113,6 @@ body.kuromi-bg .full{
   transform-origin:center center;
   user-select:none;
   pointer-events:none;
-  view-transition-name:gallery;
-  contain:layout;
 }
 
 /* 左右翻页箭头 */
@@ -172,14 +173,23 @@ body.kuromi-bg .full{
   border:none;
   z-index:12;
   background:#fff;
-  opacity:0;
-  pointer-events:none;
-  transition:opacity .3s;
+  display:none;
+  view-transition-name:maple;
 }
 #maple-frame.open{
-  opacity:1;
+  display:block;
   pointer-events:auto;
 }
+
+/* maple 进出用 view-transition，与图库 fade 同一套机制 */
+::view-transition-old(maple),
+::view-transition-new(maple){
+  animation-duration:.22s;
+  animation-timing-function:ease;
+}
+::view-transition-old(maple){ animation-name:vt-out }
+::view-transition-new(maple){ animation-name:vt-in }
+::view-transition-image-pair(maple){ isolation:isolate }
 
 /* ============================================================
    ABOUT PANEL
