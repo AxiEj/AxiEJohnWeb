@@ -170,6 +170,7 @@ body.kuromi-bg .full{
   z-index:13;
   display:none;
   opacity:0;
+  pointer-events:none;
   transition:opacity .15s;
 }
 body.maple-open #maple-cover{
@@ -177,6 +178,7 @@ body.maple-open #maple-cover{
 }
 #maple-cover.visible{
   opacity:1;
+  pointer-events:auto;
 }
 
 /* ============================================================
