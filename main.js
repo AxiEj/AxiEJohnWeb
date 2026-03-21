@@ -186,6 +186,9 @@ function showImage(imgs, index) {
   img.src = imgs[currentImg];
   resetTransform();
   updateCounter(imgs);
+  // 预加载前后相邻图片，消除快速翻页时的加载延迟
+  const pre = n => { const p = new Image(); p.src = imgs[(currentImg + n + imgs.length) % imgs.length]; };
+  pre(1); pre(-1); pre(2); pre(-2);
 }
 
 function activate(index) {
@@ -247,7 +250,6 @@ function toggleMaple() {
   if (mapleFrame.classList.contains('open')) {
     mapleFrame.classList.remove('open');
     document.body.classList.remove('maple-open');
-    fullEl.style.visibility = '';
     btnMaple.classList.remove('active');
     arrPrev.classList.remove('hidden');
     arrNext.classList.remove('hidden');
@@ -257,7 +259,6 @@ function toggleMaple() {
     if (!mapleFrame.src.includes('maple/')) mapleFrame.src = 'maple/index.html';
     mapleFrame.classList.add('open');
     document.body.classList.add('maple-open');
-    fullEl.style.visibility = 'hidden';
     btnMaple.classList.add('active');
     arrPrev.classList.add('hidden');
     arrNext.classList.add('hidden');

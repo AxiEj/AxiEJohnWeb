@@ -21,6 +21,7 @@ html,body{
 }
 
 body.maple-open nav{opacity:1}
+body.maple-open .full{visibility:hidden}
 
 body.kuromi-bg{
   background-image:url('images/mvbg-kuromi.png');
@@ -155,15 +156,15 @@ body.kuromi-bg .full{
   width:100%;
   height:calc(100% - 45px);
   border:none;
-  display:none;
   z-index:12;
   background:#fff;
   opacity:0;
+  pointer-events:none;
   transition:opacity .35s;
 }
 #maple-frame.open{
-  display:block;
   opacity:1;
+  pointer-events:auto;
 }
 
 /* ============================================================
