@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SD Optimization - MAPLE</title>
+  <title>SD/CG Optimization - MAPLE</title>
   <link rel="stylesheet" href="../../assets/css/styles.css">
 </head>
 <body>
@@ -73,9 +73,9 @@
                   <ul class="children">
                     <li><a href="opt_lbfgs.html">L-BFGS</a></li>
                     <li><a href="opt_rfo.html">RFO</a></li>
-                    <li><a href="opt_sd.html" class="active">SD</a></li>
+                    <li><a href="opt_sd.html">SD</a></li>
                     <li><a href="opt_cg.html">CG</a></li>
-                    <li><a href="opt_sdcg.html">SD/CG</a></li>
+                    <li><a href="opt_sdcg.html" class="active">SD/CG</a></li>
                   </ul>
                 </li>
                 <li>
@@ -92,16 +92,20 @@
                   <span class="tree-label"><span class="chevron"></span> <a href="../scan/scan.html">PES Scan</a></span>
                   <ul class="children">
                     <li><a href="../scan/scan_lbfgs.html">L-BFGS</a></li>
-                    <li><a href="../scan/scan_rfo.html">RFO</a></li>
                   </ul>
                 </li>
                 <li>
                   <span class="tree-label"><span class="chevron"></span> <a href="../irc/irc.html">IRC</a></span>
                   <ul class="children">
                     <li><a href="../irc/irc_gs.html">GS</a></li>
-                    <li><a href="../irc/irc_lqa.html">LQA</a></li>
-                    <li><a href="../irc/irc_hpc.html">HPC</a></li>
-                    <li><a href="../irc/irc_eulerpc.html">EulerPC</a></li>
+                  </ul>
+                </li>
+                <li>
+                  <span class="tree-label"><span class="chevron"></span> <a href="../md/md.html">Molecular Dynamics</a></span>
+                  <ul class="children">
+                    <li><a href="../md/md_nve.html">NVE</a></li>
+                    <li><a href="../md/md_nvt.html">NVT</a></li>
+                    <li><a href="../md/md_npt.html">NPT</a></li>
                   </ul>
                 </li>
               </ul>
@@ -129,19 +133,14 @@
           <span class="separator">/</span>
           <a href="optimization.html">Optimization</a>
           <span class="separator">/</span>
-          <span class="current">SD</span>
+          <span class="current">SD/CG</span>
         </nav>
 
-        <h1>Steepest Descent (SD)</h1>
+        <h1>SD/CG Optimization</h1>
 
         <h2 id="overview">Overview</h2>
-<<<<<<< HEAD
-        <p>The SD/CG optimizer is a hybrid steepest-descent / conjugate-gradient method with optional DIIS (Direct Inversion in the Iterative Subspace) acceleration. It begins with a steepest descent phase to rapidly reduce large forces, then automatically switches to the conjugate gradient algorithm for more efficient convergence near a minimum. DIIS extrapolation can be applied periodically to further accelerate convergence.</p>
-        <p>This method is invoked with the keyword <code>sdcg</code>. The individual phases (SD, CG, DIIS) can be independently enabled or disabled via parameters, allowing the user to run pure steepest descent (<code>cg_enabled=false, diis_enabled=false</code>), pure conjugate gradient (<code>sd_enabled=false</code>), or any combination.</p>
-=======
-        <p>The steepest descent optimizer moves each step directly along the negative gradient direction, scaled by a fixed maximum step length. It is the simplest first-order method and requires no history or Hessian information. Invoked with <code>method=sd</code> inside <code>#opt()</code>.</p>
-        <p>Because each step is independent and the direction is always the steepest downhill direction, SD is highly robust for severely distorted geometries but converges slowly near a minimum due to its tendency to zigzag. For better convergence after the initial descent, consider switching to <a href="opt_cg.html">CG</a> or using the automatic <a href="opt_sdcg.html">SD/CG</a> fusion.</p>
->>>>>>> 16e50ee (Add CG/SD-CG opt docs, fix image paths, and update opt pages)
+        <p>The SD/CG optimizer is a hybrid steepest-descent / conjugate-gradient method with optional DIIS acceleration. It begins with a steepest descent phase to rapidly reduce large forces, then automatically switches to conjugate gradient for more efficient convergence near a minimum. This is the recommended choice when a starting geometry may be significantly distorted. Invoked with <code>method=sdcg</code> (or simply the keyword <code>sdcg</code>, which defaults to this mode).</p>
+        <p>The switch from SD to CG is controlled by <code>sd_max_iter</code> and <code>cg_switch_fmax</code>: the optimizer moves to CG once either the SD iteration limit is reached or the maximum force drops below the specified threshold. The parameters <code>sd_enabled</code> and <code>cg_enabled</code> are derived internally from the <code>method</code> keyword and are not intended to be set directly.</p>
 
         <h2 id="parameters">Parameters</h2>
         <div class="table-wrapper">
@@ -171,7 +170,49 @@
                 <td><code>sd_max_iter</code></td>
                 <td>int</td>
                 <td><code>50</code></td>
-                <td>Maximum SD iterations before stopping (when used as a standalone method).</td>
+                <td>Maximum iterations in the initial SD phase before switching to CG.</td>
+              </tr>
+              <tr>
+                <td><code>cg_switch_fmax</code></td>
+                <td>float</td>
+                <td><code>0.0</code></td>
+                <td>Switch from SD to CG when the maximum force drops below this value (eV/Å). Set to 0 to switch purely based on <code>sd_max_iter</code>.</td>
+              </tr>
+              <tr>
+                <td><code>cg_restart_threshold</code></td>
+                <td>float</td>
+                <td><code>0.2</code></td>
+                <td>Restart CG directions when the gradient change ratio exceeds this value.</td>
+              </tr>
+              <tr>
+                <td><code>cg_beta_method</code></td>
+                <td>str</td>
+                <td><code>"prp+"</code></td>
+                <td>Conjugate gradient beta formula.</td>
+              </tr>
+              <tr>
+                <td><code>diis_enabled</code></td>
+                <td>bool</td>
+                <td><code>True</code></td>
+                <td>Enable DIIS extrapolation acceleration.</td>
+              </tr>
+              <tr>
+                <td><code>diis_store_every</code></td>
+                <td>int</td>
+                <td><code>5</code></td>
+                <td>Store a DIIS snapshot every N steps.</td>
+              </tr>
+              <tr>
+                <td><code>diis_min_snapshots</code></td>
+                <td>int</td>
+                <td><code>3</code></td>
+                <td>Minimum snapshots required before DIIS extrapolation is attempted.</td>
+              </tr>
+              <tr>
+                <td><code>diis_memory</code></td>
+                <td>int</td>
+                <td><code>6</code></td>
+                <td>Maximum number of DIIS snapshots stored.</td>
               </tr>
               <tr>
                 <td><code>write_traj</code></td>
@@ -191,76 +232,13 @@
                 <td><code>1</code></td>
                 <td>Output verbosity level.</td>
               </tr>
-<<<<<<< HEAD
-              <tr>
-                <td><code>sd_enabled</code></td>
-                <td>bool</td>
-                <td><code>True</code></td>
-                <td>Enable steepest descent phase.</td>
-              </tr>
-              <tr>
-                <td><code>cg_enabled</code></td>
-                <td>bool</td>
-                <td><code>True</code></td>
-                <td>Enable conjugate gradient phase.</td>
-              </tr>
-              <tr>
-                <td><code>sd_max_iter</code></td>
-                <td>int</td>
-                <td><code>50</code></td>
-                <td>Max iterations for the initial SD phase.</td>
-              </tr>
-              <tr>
-                <td><code>cg_switch_fmax</code></td>
-                <td>float</td>
-                <td><code>0.0</code></td>
-                <td>Switch from SD to CG when max force drops below this value.</td>
-              </tr>
-              <tr>
-                <td><code>cg_restart_threshold</code></td>
-                <td>float</td>
-                <td><code>0.2</code></td>
-                <td>Restart CG directions when gradient change exceeds this ratio.</td>
-              </tr>
-              <tr>
-                <td><code>cg_beta_method</code></td>
-                <td>str</td>
-                <td><code>"prp+"</code></td>
-                <td>Conjugate gradient beta formula.</td>
-              </tr>
-              <tr>
-                <td><code>diis_enabled</code></td>
-                <td>bool</td>
-                <td><code>True</code></td>
-                <td>Enable DIIS extrapolation acceleration.</td>
-              </tr>
-              <tr>
-                <td><code>diis_store_every</code></td>
-                <td>int</td>
-                <td><code>5</code></td>
-                <td>Store DIIS snapshot every N steps.</td>
-              </tr>
-              <tr>
-                <td><code>diis_min_snapshots</code></td>
-                <td>int</td>
-                <td><code>3</code></td>
-                <td>Minimum snapshots before DIIS extrapolation is attempted.</td>
-              </tr>
-              <tr>
-                <td><code>diis_memory</code></td>
-                <td>int</td>
-                <td><code>6</code></td>
-                <td>Maximum number of DIIS snapshots stored.</td>
-              </tr>
-=======
->>>>>>> 16e50ee (Add CG/SD-CG opt docs, fix image paths, and update opt pages)
             </tbody>
           </table>
         </div>
 
         <h2 id="input-example">Input Example</h2>
         <pre><code>#model=uma
-#opt(method=sd)
+#opt(method=sdcg)
 #device=gpu0
 
 C      -0.77812600     -1.06756100      0.32105900
@@ -288,28 +266,21 @@ H       2.96000900     -0.36880600     -1.38891000</code></pre>
 
         <h2 id="when-to-use">When to Use</h2>
         <ul>
-<<<<<<< HEAD
-          <li><strong>Initial rough optimization:</strong> When the starting geometry is far from any minimum and contains large steric clashes or unreasonable bond lengths, the SD phase can quickly reduce the worst forces before the CG phase takes over for efficient convergence.</li>
-          <li><strong>Very far from the minimum:</strong> In the early stages of optimization where the energy surface is steep and nearly linear, the SD phase is just as efficient as higher-order methods and considerably cheaper per step.</li>
-          <li><strong>When L-BFGS oscillates:</strong> If L-BFGS enters a cycle of large oscillating steps, SD/CG can provide a more stable convergence path by combining gradient-only steps with conjugate gradient refinement.</li>
-          <li><strong>Pure SD or pure CG:</strong> Disable one phase to run a single method. Set <code>cg_enabled=false</code> and <code>diis_enabled=false</code> for pure steepest descent, or <code>sd_enabled=false</code> for pure conjugate gradient.</li>
-=======
-          <li><strong>Severely distorted geometries:</strong> When the starting structure has large steric clashes or unreasonable bond lengths, SD rapidly reduces the worst forces without requiring Hessian information.</li>
-          <li><strong>Pre-optimization pass:</strong> A short SD run can stabilise a structure before handing off to a more efficient method such as L-BFGS or RFO.</li>
-          <li><strong>Diagnostic runs:</strong> Because each step is independent and the algorithm is transparent, SD is useful for isolating convergence problems.</li>
->>>>>>> 16e50ee (Add CG/SD-CG opt docs, fix image paths, and update opt pages)
+          <li><strong>Distorted starting geometries:</strong> The SD phase rapidly reduces large forces without requiring any history, then hands off to CG for efficient final convergence — combining the robustness of SD with the speed of CG.</li>
+          <li><strong>When L-BFGS oscillates:</strong> If L-BFGS enters a cycle of large oscillating steps, SD/CG can provide a more stable convergence path.</li>
+          <li><strong>General-purpose fallback:</strong> SD/CG is a reliable choice whenever L-BFGS or RFO fails to converge, without requiring manual tuning of which phase to use.</li>
         </ul>
 
         <h2 id="convergence">Convergence Behaviour</h2>
-        <p>The figures below show a typical SD run on a 22-atom organic molecule (UMA model). Energy drops steeply in the early iterations but the characteristic zigzagging of SD slows convergence near the minimum.</p>
+        <p>The figures below show a typical SD/CG run on a 22-atom organic molecule (UMA model). The vertical dotted line marks the automatic switch from the SD phase to the CG phase. Energy drops steeply during SD, then the CG phase refines to convergence.</p>
         <div class="figure-row">
           <figure class="doc-figure">
-            <img src="../../assets/images/opt/sd/energy_vs_iter_sd.png" alt="SD energy vs iteration">
-            <figcaption>Fig. 1 — Energy convergence (SD)</figcaption>
+            <img src="../../assets/images/opt/sdcg/energy_vs_iter_sdcg.png" alt="SD/CG energy vs iteration">
+            <figcaption>Fig. 1 — Energy convergence (SD/CG)</figcaption>
           </figure>
           <figure class="doc-figure">
-            <img src="../../assets/images/opt/sd/force_vs_iter_sd.png" alt="SD force vs iteration">
-            <figcaption>Fig. 2 — Force convergence (SD)</figcaption>
+            <img src="../../assets/images/opt/sdcg/force_vs_iter_sdcg.png" alt="SD/CG force vs iteration">
+            <figcaption>Fig. 2 — Force convergence (SD/CG)</figcaption>
           </figure>
         </div>
 
@@ -319,13 +290,13 @@ H       2.96000900     -0.36880600     -1.38891000</code></pre>
             Note
           </div>
           <div class="admonition-body">
-            <p>Pure SD is rarely the best choice for a complete optimization. Consider <a href="opt_sdcg.html">SD/CG</a> to automatically transition to conjugate gradient once the large initial forces have been reduced, or <a href="opt_lbfgs.html">L-BFGS</a> for production runs.</p>
+            <p>For production-quality geometry optimizations, <a href="opt_lbfgs.html">L-BFGS</a> (the default) is generally preferred due to its superior convergence near minima. SD/CG is most useful as a pre-optimizer for severely distorted structures or when L-BFGS has difficulty converging.</p>
           </div>
         </div>
 
         <nav class="page-nav">
-          <a href="opt_rfo.html">&larr; RFO</a>
-          <a class="next" href="opt_cg.html">CG &rarr;</a>
+          <a href="opt_cg.html">&larr; CG</a>
+          <a class="next" href="../ts/ts.html">Transition State &rarr;</a>
         </nav>
       </article>
     </main>
